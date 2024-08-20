@@ -30,16 +30,16 @@ bot.delete_my_commands(scope=types.BotCommandScopeAllPrivateChats())
 
 quiz_status = True
 quiz_list = [
-    {"question": "What is the reward percentage for staking FXST for 75 days?", "answer": "36%", "options": ["20%", "29%", "36%", "43%"]},
-    {"question": "What is the primary use of the FXST token?", "answer": "Trading and staking", "options": ["Shopping", "Investing in stocks", "Trading and staking", "Travel bookings"]},
-    {"question": "What is the reward percentage for staking FXST for 60 days?", "answer": "28%", "options": ["15%", "20%", "25%", "28%"]},
+    {"question": "What is the main utility of the FXST Token?", "answer": "Staking", "options": ["Staking", "Trading", "Lending", "Governance"]},
+    {"question": "Which blockchain is FXST Token built on?", "answer": "Binance Smart Chain", "options": ["Ethereum", "Binance Smart Chain", "Solana", "Polkadot"]},
+    {"question": "Which platform will FXST Token be listed on first?", "answer": "LA Token", "options": ["Coinbase", "Bitmart", "MEXC", "LA Token"]},
     {"question": "Which use case of FXST Token involves a marketplace for digital collectibles?", "answer": "NFT marketplace", "options": ["Forex trading", "NFT marketplace", "Indices and commodity trading", "Crypto staking"]},
-    {"question": "When is the FXST Token expected to be listed on the LaToken exchange according to the roadmap?", "answer": "January 2024", "options": ["November 2023", "January 2024", "March 2024", "May 2024"]},
-    {"question": "What technology underlies cryptocurrencies?", "answer": "Blockchain", "options": ["Artificial Intelligence", "Cloud Computing", "Blockchain", "Quantum Computing"]},
-    {"question": "What is the purpose of a \"block\" in the blockchain?", "answer": "Validate transactions", "options": ["Store data", "Process transactions", "Execute smart contracts", "Validate transactions"]},
-    {"question": "Which term describes the total value of all coins of a cryptocurrency that have been mined?", "answer": "Market Cap", "options": ["Market Cap", "Circulating Supply", "Volume", "Hash Rate"]},
-    {"question": "Which of the following is a stablecoin?", "answer": "Tether (USDT)", "options": ["Bitcoin", "Tether (USDT)", "Ethereum", "Dogecoin"]},
-    {"question": "Which cryptocurrency was created as a joke but gained significant popularity?", "answer": "Dogecoin", "options": ["Bitcoin", "Ethereum", "Litecoin", "Dogecoin"]}
+    {"question": "Which feature is not associated with FXST Token?", "answer": "Lending", "options": ["Governance", "Lending", "Trading", "Rewards"]},
+    {"question": "What does <b>HODL</b> mean in crypto?", "answer": "Hold On for Dear Life", "options": ["Hold On for Dear Life", "High Order Digital Ledger", "Hold On Digital Liquidity", "Heavy Order Demand List"]},
+    {"question": "Who created Ethereum?", "answer": "Vitalik Buterin", "options": ["Satoshi Nakamoto", "Vitalik Buterin", "Charles Hoskinson", "Gavin Wood"]},
+    {"question": "Which country first adopted Bitcoin as legal tender?", "answer": "El Salvador", "options": ["United States", "Switzerland", "El Salvador", "Japan"]},
+    {"question": "Which term describes a rapid price increase in a cryptocurrency?", "answer": "Pump", "options": ["Pump", "Dump", "Burn", "Slash"]},
+    {"question": "Which of the following is a popular hardware wallet?", "answer": "Ledger", "options": ["MetaMask", "Coinbase", "Ledger", "Binance"]}
 ]
 
 @bot.message_handler(func=lambda message: message.text in ['/cancle'], chat_types=['private'])
@@ -65,13 +65,13 @@ def start(message: types.Message):
             coll.insert_one({"_id": message.from_user.id, "username": message.from_user.username, "firstname": message.from_user.first_name, "refcount": 0})
     mention = util.user_link(message.from_user)
     bot.send_message(message.from_user.id, f'Hey <b>{mention}</b> 👋😉 \n\n🎉 Welcome to the <b>FXST Token Quiz Airdrop</b>! 🏆\n\nBefore we start the quiz, we need a few details from you to ensure we can send you your rewards if you win. 🏅')
-    bot.send_message(message.from_user.id, 'Please submit your email address:')
+    bot.send_message(message.from_user.id, '<b>Please Submit Your Email Address</b> 📧:')
     coll2.replace_one({"_id": message.from_user.id}, {"_id": message.from_user.id, "state": "email", "createdAt": datetime.utcnow()}, upsert=True)
 
 def get_email(message: types.Message):
     if message.entities and len(message.entities) == 1 and message.entities[0].offset == 0 and message.entities[0].length == len(message.text) and message.entities[0].type == "email":
         coll.update_one({"_id": message.from_user.id}, {"$set": {"email": message.text}})
-        bot.send_message(message.from_user.id, 'Okay. Now submit your BNB BEP20 wallet address:')
+        bot.send_message(message.from_user.id, 'Okay. Now submit your <b>BNB BEP20 wallet address</b>👇🏻:')
         coll2.replace_one({"_id": message.from_user.id}, {"_id": message.from_user.id, "state": "wallet", "createdAt": datetime.utcnow()}, upsert=True)
     else:
         bot.send_message(message.from_user.id, 'Invalid email address. Try again:')
@@ -81,7 +81,7 @@ def get_wallet(message: types.Message):
         coll.update_one({"_id": message.from_user.id}, {"$set": {"wallet": message.text}})
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton("I have joined", callback_data="telegram"))
-        bot.send_message(message.from_user.id, 'Okay. Now join our Telegram group:\nhttps://t.me/+uFPk-Z12V3UyZDY1', reply_markup=keyboard)
+        bot.send_message(message.from_user.id, 'Okay. Now join our <b>Telegram Group</b>📲:\nhttps://t.me/+uFPk-Z12V3UyZDY1', reply_markup=keyboard)
         coll2.delete_one({"_id": message.from_user.id})
     else:
         bot.send_message(message.from_user.id, 'Invalid wallet address. Try again:')
@@ -95,13 +95,13 @@ def telegram(call: types.CallbackQuery):
     except:
         pass
     bot.edit_message_reply_markup(call.from_user.id, call.message.message_id)
-    bot.send_message(call.from_user.id, 'Okay. Now follow our Twitter page, like and repost the pinned post and tag 3 of your friends:\nhttps://x.com/fxsttoken\n\nThen submit your Twitter username:\nExample: <code>@username</code>')
+    bot.send_message(call.from_user.id, 'Okay. Now follow our <b>Twitter page,Like ❤️ and Repost 📲 the pinned post and Tag 3 of your friends👥</b>:\nhttps://x.com/fxsttoken\n\nThen submit your Twitter username:\nExample: <code>@username</code>')
     coll2.replace_one({"_id": call.from_user.id}, {"_id": call.from_user.id, "state": "twitter", "createdAt": datetime.utcnow()}, upsert=True)
 
 def get_twitter(message: types.Message):
     if search(r"^@[a-zA-Z0-9_]{1,15}$", message.text):
         coll.update_one({"_id": message.from_user.id}, {"$set": {"twitter": message.text}})
-        bot.send_message(message.from_user.id, 'Okay. Now follow our Instagram page and like the pinned post:\nhttps://www.instagram.com/fxsttoken\n\nThen submit your Instagram username:\nExample: <code>@username</code>')
+        bot.send_message(message.from_user.id, 'Okay. Now follow our <b>Instagram Page,Like ❤️ & Comment 💬 the pinned post</b>:\nhttps://www.instagram.com/fxsttoken\n\n<b>Then submit your Instagram username</b>:\nExample: <code>@username</code>')
         coll2.replace_one({"_id": message.from_user.id}, {"_id": message.from_user.id, "state": "instagram", "createdAt": datetime.utcnow()}, upsert=True)
     else:
         bot.send_message(message.from_user.id, 'Invalid Twitter username. Try again:')
@@ -109,7 +109,7 @@ def get_twitter(message: types.Message):
 def get_instagram(message: types.Message):
     if search(r"^@[a-zA-Z0-9._]{1,30}$", message.text):
         coll.update_one({"_id": message.from_user.id}, {"$set": {"instagram": message.text}})
-        bot.send_message(message.from_user.id, 'Okay. Now follow our Facebook page, like and comment on the pinned post:\nhttps://www.facebook.com/fxsttoken\n\nThen submit your Facebook username:\nExample: <code>@username</code>')
+        bot.send_message(message.from_user.id, 'Okay. Now follow our <b>Facebook page, Like ❤️ and Comment 💬 on the pinned post</b>:\nhttps://www.facebook.com/fxsttoken\n\n<b>Then submit your Facebook username</b>👇🏻:\nExample: <code>@username</code>')
         coll2.replace_one({"_id": message.from_user.id}, {"_id": message.from_user.id, "state": "facebook", "createdAt": datetime.utcnow()}, upsert=True)
     else:
         bot.send_message(message.from_user.id, 'Invalid Instagram username. Try again:')
@@ -117,7 +117,7 @@ def get_instagram(message: types.Message):
 def get_facebook(message: types.Message):
     if search(r"^@[a-zA-Z0-9.]{5,30}$", message.text):
         coll.update_one({"_id": message.from_user.id}, {"$set": {"facebook": message.text}})
-        bot.send_message(message.from_user.id, '<b>Follow the FXST Token on CMC:</b> https://coinmarketcap.com/community/profile/fxst\n\n<b>Leave a comment on the FXST CMC Page:</b> https://coinmarketcap.com/currencies/fxg\n\n<b>Then share your CMC username:</b>\nExample: <code>@username</code>')
+        bot.send_message(message.from_user.id, '<b>Follow the FXST Token on CMC:</b> https://coinmarketcap.com/community/profile/fxst\n\n<b>Leave a comment on the FXST CMC Page 💬:</b> https://coinmarketcap.com/currencies/fxg\n\n<b>Then share your CMC username:</b>\nExample: <code>@username</code>')
         coll2.replace_one({"_id": message.from_user.id}, {"_id": message.from_user.id, "state": "cmc", "createdAt": datetime.utcnow()}, upsert=True)
     else:
         bot.send_message(message.from_user.id, 'Invalid Facebook username. Try again:')
@@ -125,7 +125,7 @@ def get_facebook(message: types.Message):
 def get_cmc(message: types.Message):
     if search(r"^@[a-zA-Z0-9_]{4,20}$", message.text):
         coll.update_one({"_id": message.from_user.id}, {"$set": {"cmc": message.text}})
-        bot.send_message(message.from_user.id, 'Okay. Now subscribe to our YouTube channel:\nhttps://www.youtube.com/@FXstockToken\n\nThen submit your YouTube username:\nExample: <code>@username</code>')
+        bot.send_message(message.from_user.id, 'Okay, Now <b>subscribe to our YouTube channel</b>:\nhttps://www.youtube.com/@FXstockToken\n\n<b>Then submit your YouTube username</b>:\nExample: <code>@username</code>')
         coll2.replace_one({"_id": message.from_user.id}, {"_id": message.from_user.id, "state": "youtube", "createdAt": datetime.utcnow()}, upsert=True)
     else:
         bot.send_message(message.from_user.id, 'Invalid CMC username. Try again:')
@@ -141,12 +141,12 @@ def get_youtube(message: types.Message):
         if quiz_status:
             keyboard = types.InlineKeyboardMarkup()
             keyboard.add(types.InlineKeyboardButton('Start Quiz', callback_data="startquiz"))
-            bot.send_message(message.from_user.id, 'Congratulations, you have successfully completed the airdrop tasks and are now eligible for the quiz round.\n\nPress the button below to start the quiz.', reply_markup=keyboard)
+            bot.send_message(message.from_user.id, '<b>Congratulations</b>, you have successfully completed the airdrop tasks and are now eligible for the quiz round.\n\n<b>Press the button below to start the quiz</b>👇🏻.', reply_markup=keyboard)
         else:
             keyboard = types.InlineKeyboardMarkup()
             keyboard.add(types.InlineKeyboardButton("Account", callback_data=f"account"))
             keyboard.add(types.InlineKeyboardButton("Leaderboard", callback_data=f"leaderboard"))
-            bot.send_message(message.from_user.id, 'Congratulations, you have successfully completed the airdrop tasks.', reply_markup=keyboard)
+            bot.send_message(message.from_user.id, '<b>Congratulations</b>, you have successfully completed the airdrop tasks.', reply_markup=keyboard)
     else:
         bot.send_message(message.from_user.id, 'Invalid YouTube username. Try again:')
 
@@ -156,7 +156,7 @@ def startquiz(call: types.CallbackQuery):
     user = coll.find_one({"_id": call.from_user.id}, {"quiz_number": 1})
     quiz_number = user.get("quiz_number", 0)
     if quiz_number >= len(quiz_list):
-        bot.send_message(call.from_user.id, "You have already completed the quiz round.")
+        bot.send_message(call.from_user.id, "<b>You have already completed the quiz round☹️</b>.")
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton("Refresh", callback_data=f"account"))
         keyboard.add(types.InlineKeyboardButton("Leaderboard", callback_data=f"leaderboard"))
